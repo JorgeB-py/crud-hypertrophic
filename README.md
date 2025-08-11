@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Hypertrophic · CRUD Dashboard
 
-## Getting Started
+Panel de administración para productos, marcas y pedidos de Hypertrophic.
+Construido con Next.js (App Router), Firebase (Auth + Firestore) y shadcn/ui.
 
-First, run the development server:
+Features:
+- Auth (Email/Password) sin registro público (solo usuarios creados en Firebase Console).
+- Productos: CRUD completo, variantes, campos extra dinámicos por producto y por variante.
+- Marcas: CRUD con logo y búsqueda.
+- Pedidos: listado y detalle (cliente, ítems, estado, total).
+- UI limpia con shadcn/ui, accesible, responsive y con atajos visuales.
+- Reglas de Firestore seguras: público lee, solo logueados escriben; pedidos restringidos.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Stack:
+- Next.js 14 (App Router)
+- Firebase: Authentication + Firestore
+- Tailwind CSS + shadcn/ui
+- TypeScript
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Quick Start:
+1) Clonar
+   git clone https://github.com/<tu-usuario>/<tu-repo>.git
+   cd <tu-repo>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2) Instalar deps
+   npm i
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3) Variables de entorno
+   cp .env.example .env.local   # y rellena con tus claves
 
-## Learn More
+4) Dev
+   npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+Abre http://localhost:3000.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Configurar Firebase:
+1. Crear proyecto en Firebase Console.
+2. Firestore: habilitar en modo producción.
+3. Authentication → Email/Password.
+4. Crear usuarios manualmente.
+5. Copiar claves SDK Web a .env.local.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+.env.local ejemplo:
+NEXT_PUBLIC_FB_API_KEY=AIzaSy...
+NEXT_PUBLIC_FB_AUTH_DOMAIN=tu-proyecto.firebaseapp.com
+NEXT_PUBLIC_FB_PROJECT_ID=tu-proyecto
+NEXT_PUBLIC_FB_STORAGE_BUCKET=tu-proyecto.appspot.com
+NEXT_PUBLIC_FB_MESSAGE_SENDER=1234567890
+NEXT_PUBLIC_FB_APP_ID=1:1234567890:web:abc123
+NEXT_PUBLIC_FB_MEASUREMENT_ID=G-XXXXXXX
 
-## Deploy on Vercel
+Rutas principales:
+- /           Home
+- /login      Iniciar sesión
+- /productos  CRUD productos
+- /marcas     CRUD marcas
+- /pedidos    Listado + detalle pedidos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Modelo de datos:
+(Product, Variant, Market, Pedido) — ver descripción detallada en el README original.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Reglas de Firestore recomendadas:
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && request.auth.token.admin == true; }
+
+    match /productos/{id} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /marcas/{id} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /pedidos/{id} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /users/{uid} {
+      allow read, update: if isSignedIn() && request.auth.uid == uid;
+      allow create: if isSignedIn() && request.auth.uid == uid;
+    }
+  }
+}
+
+Scripts:
+npm run dev     # desarrollo
+npm run build   # build producción
+npm run start   # producción
+npm run lint    # lint
+
+Seguridad:
+- No exponer claves privadas.
+- Crear usuarios manualmente.
+- Reglas de Firestore activas antes del deploy.
+
+Licencia:
+MIT © Hypertrophic
