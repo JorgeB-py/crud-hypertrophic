@@ -77,7 +77,7 @@ export default function PedidosPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <Button onClick={() => router.push("/")}>
+      <Button onClick={() => router.push("/crud")}>
         <StepBack />
         Volver
       </Button>
