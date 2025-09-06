@@ -56,7 +56,7 @@ export interface Product {
   updatedAt?: any
 }
 
-export interface Market { id: string; name: string; image: string }
+export interface Market { id: string; market: string; image: string }
 
 // ================== Utils ==================
 const isUrl = (v: string) => /^https?:\/\/.+/i.test(v)
@@ -168,11 +168,24 @@ function KvTable({
 function VariantsEditor({
   variants, setVariants
 }: { variants: Variant[]; setVariants: (v: Variant[]) => void }) {
-  const addVariant = () => setVariants([...(variants || []), { ...emptyVariant }])
-  const update = (idx: number, patch: Partial<Variant>) => {
-    const next = [...variants]; next[idx] = { ...next[idx], ...patch }; setVariants(next)
+  const addVariant = () => {
+    if (variants.length > 0) {
+      const last = variants[variants.length - 1]
+      // Duplica la última variante exactamente como está
+      setVariants([...variants, { ...last }])
+    } else {
+      setVariants([{ ...emptyVariant }])
+    }
   }
-  const remove = (idx: number) => setVariants(variants.filter((_, i) => i !== idx))
+
+  const update = (idx: number, patch: Partial<Variant>) => {
+    const next = [...variants]; 
+    next[idx] = { ...next[idx], ...patch } 
+    setVariants(next)
+  }
+
+  const remove = (idx: number) => 
+    setVariants(variants.filter((_, i) => i !== idx))
 
   return (
     <div className="rounded-xl border border-white/10 p-3">
@@ -255,6 +268,7 @@ function VariantsEditor({
   )
 }
 
+
 // ================== Página ==================
 export default function ProductosPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -280,7 +294,7 @@ export default function ProductosPage() {
 
   // Marcas para el selector
   useEffect(() => {
-    const qy = query(collection(db, 'marcas'), orderBy('name', 'asc'))
+    const qy = query(collection(db, 'marcas'), orderBy('market', 'asc'))
     const unsub = onSnapshot(qy, (snap) => {
       const list = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as Market[]
       setMarkets(list)
@@ -466,16 +480,10 @@ export default function ProductosPage() {
                     </SelectTrigger>
                     <SelectContent className="bg-neutral-900 text-white border-white/10">
                       {markets.map(m => (
-                        <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>
+                        <SelectItem key={m.id} value={m.market}>{m.market}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <Input
-                    placeholder="o escribe aquí"
-                    value={customMarket}
-                    onChange={(e) => setCustomMarket(e.target.value)}
-                    className="bg-neutral-900/60 text-white border-white/10"
-                  />
                 </div>
               </div>
 
