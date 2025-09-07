@@ -27,12 +27,13 @@ import { StepBack } from 'lucide-react'
 export interface Market {
   id: string
   name: string
+  market: string
   image: string
 }
 
 // ---------------- Utils ----------------
 const isUrl = (v: string) => /^https?:\/\/.+/i.test(v)
-const emptyMarket: Market = { id: '', name: '', image: '' }
+const emptyMarket: Market = { id: '', name: '', image: '', market:'' }
 
 // ---------------- Page ----------------
 export default function MarcasPage() {
@@ -78,14 +79,16 @@ export default function MarcasPage() {
     if (form.image && !isUrl(form.image)) return alert('La imagen debe ser una URL válida (http/https).')
     try {
       if (editing?.id) {
-        await updateDoc(doc(db, 'markets', editing.id), {
+        await updateDoc(doc(db, 'marcas', editing.id), {
           name: form.name.trim(),
           image: form.image.trim(),
+          market: form.market
         })
       } else {
-        await addDoc(collection(db, 'markets'), {
+        await addDoc(collection(db, 'marcas'), {
           name: form.name.trim(),
           image: form.image.trim(),
+          market: form.market
         })
       }
       setOpenForm(false)
@@ -99,7 +102,7 @@ export default function MarcasPage() {
   const doDelete = async () => {
     if (!confirmDelete?.id) return
     try {
-      await deleteDoc(doc(db, 'markets', confirmDelete.id))
+      await deleteDoc(doc(db, 'marcas', confirmDelete.id))
       setConfirmDelete(null)
     } catch (e: any) {
       alert(e.message)
@@ -133,6 +136,7 @@ export default function MarcasPage() {
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="text-white">Logo</TableHead>
                     <TableHead className="text-white">Nombre</TableHead>
+                    <TableHead className="text-white">Market</TableHead>
                     <TableHead className="text-right text-white">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -159,6 +163,7 @@ export default function MarcasPage() {
                         )}
                       </TableCell>
                       <TableCell className="font-medium">{m.name}</TableCell>
+                      <TableCell className="font-medium">{m.market}</TableCell>
                       <TableCell className="text-right">
                         <div className="inline-flex gap-2">
                           <Button variant="ghost" onClick={() => startEdit(m)}>Editar</Button>
@@ -186,9 +191,19 @@ export default function MarcasPage() {
               <Label htmlFor="name">Nombre</Label>
               <Input
                 id="name"
-                placeholder="Proscience, Dymatize, ON…"
+                placeholder="Prosciencelogo, Dymatizelogo, ON…"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="bg-neutral-900/60 text-white border-white/10"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="market">Market</Label>
+              <Input
+                id="market"
+                placeholder="Proscience, Dymatize, ON…"
+                value={form.market}
+                onChange={(e) => setForm({ ...form, market: e.target.value })}
                 className="bg-neutral-900/60 text-white border-white/10"
               />
             </div>
