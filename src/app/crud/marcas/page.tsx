@@ -4,8 +4,9 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { db } from '@/lib/firebaseClient'
 import {
-  collection, addDoc, updateDoc, deleteDoc, doc,
-  onSnapshot, orderBy, query
+  collection, updateDoc, deleteDoc, doc,
+  onSnapshot, orderBy, query,
+  setDoc
 } from 'firebase/firestore'
 
 // shadcn/ui
@@ -85,7 +86,7 @@ export default function MarcasPage() {
           market: form.market
         })
       } else {
-        await addDoc(collection(db, 'marcas', form.market), {
+        await setDoc(doc(db, 'marcas', form.market), {
           name: form.name.trim(),
           image: form.image.trim(),
           market: form.market
