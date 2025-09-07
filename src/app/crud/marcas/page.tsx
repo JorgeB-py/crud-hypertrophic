@@ -85,7 +85,7 @@ export default function MarcasPage() {
           market: form.market
         })
       } else {
-        await addDoc(collection(db, 'marcas'), {
+        await addDoc(collection(db, 'marcas', form.market), {
           name: form.name.trim(),
           image: form.image.trim(),
           market: form.market
