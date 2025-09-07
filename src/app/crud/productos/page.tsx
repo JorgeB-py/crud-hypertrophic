@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import {
   collection, addDoc, updateDoc, deleteDoc, doc,
-  onSnapshot, orderBy, query, serverTimestamp
+  onSnapshot, orderBy, query
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 
