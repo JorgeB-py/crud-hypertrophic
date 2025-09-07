@@ -52,8 +52,6 @@ export interface Product {
   category: string
   variants: Variant[]
   extra?: Record<string, any>
-  createdAt?: any
-  updatedAt?: any
 }
 
 export interface Market { id: string; market: string; image: string }
@@ -349,8 +347,6 @@ export default function ProductosPage() {
         ...(v.extra ? { extra: v.extra } : {})
       })),
       ...(form.extra ? { extra: form.extra } : {}),
-      updatedAt: serverTimestamp(),
-      ...(editing?.id ? {} : { createdAt: serverTimestamp() })
     }
 
     try {
